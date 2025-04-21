@@ -62,15 +62,15 @@ void wordle_helper(
         return;
     }
     
-    // Key optimization: Check if we still have enough positions to place all remaining floating chars
-    int remaining_positions = current.size() - position;
+    // Count remaining dashes from current position to end
     int remaining_dashes = 0;
     for(size_t i = position; i < current.size(); i++) {
         if(current[i] == '-') remaining_dashes++;
     }
     
+    // Early termination: Not enough spaces for remaining floating chars
     if(remaining_dashes < remaining_floating.size()) {
-        return; // Not enough spaces for remaining floating chars
+        return;
     }
     
     // If the current position already has a fixed letter, move to the next position
@@ -79,60 +79,36 @@ void wordle_helper(
         return;
     }
     
-    // Early pruning: Check if the current prefix could lead to a valid word
-    string prefix = current.substr(0, position);
-    bool prefix_valid = false;
-    
-    // Only do expensive prefix checking for positions > 0
-    if (position > 0) {
-        // Check if any word in the dictionary starts with this prefix
-        for (const auto& word : dict) {
-            if (word.size() == current.size() && word.substr(0, position) == prefix) {
-                prefix_valid = true;
-                break;
-            }
-        }
-        
-        if (!prefix_valid) {
-            return; // No valid words start with this prefix
-        }
-    }
-    
     // Case 1: Try using one of the floating characters at this position
     for (size_t i = 0; i < remaining_floating.size(); i++) {
-        // Place the floating character at the current position
         current[position] = remaining_floating[i];
         
-        // Remove this character from remaining_floating
-        string new_remaining = remaining_floating.substr(0, i) + 
-                               remaining_floating.substr(i + 1);
+        // Create new remaining floating string by removing used character
+        string new_remaining = remaining_floating;
+        new_remaining.erase(i, 1);
         
-        // Recursive call with updated state
         wordle_helper(current, position + 1, new_remaining, dict, results);
     }
     
-    // Case 2: Try using any alphabet letter (if we don't need all remaining positions for floating letters)
+    // Case 2: Try other alphabet letters if we don't need all spots for floating letters
     if (remaining_floating.size() < remaining_dashes) {
         for (char c = 'a'; c <= 'z'; c++) {
-            // Skip this letter if it's in the remaining floating characters
-            bool in_floating = false;
+            // Check if this letter is in remaining_floating
+            bool skip = false;
             for (char f : remaining_floating) {
                 if (c == f) {
-                    in_floating = true;
+                    skip = true;
                     break;
                 }
             }
             
-            if (!in_floating) {
-                // Place this letter at the current position
+            if (!skip) {
                 current[position] = c;
-                
-                // Recursive call with the same remaining floating letters
                 wordle_helper(current, position + 1, remaining_floating, dict, results);
             }
         }
     }
     
-    // Restore the current position back to a dash for backtracking
+    // Restore current position for backtracking
     current[position] = '-';
 }
