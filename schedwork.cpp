@@ -12,8 +12,7 @@
 
 using namespace std;
 
-// a constant that can be used to indicate an INVALID 
-// worker ID if that is useful to your implementation.
+// Indicates an INVALID worker ID if that is useful to your implementation.
 static const Worker_T INVALID_ID = (unsigned int)-1;
 
 // Helper function prototypes
@@ -48,13 +47,13 @@ bool schedule(
     
     sched.clear();
     
-    // Number of days
+    // No. of days
     size_t n = avail.size();
     
-    // Number of workers
+    // N0. of workers
     size_t k = avail[0].size();
     
-    // Initialize the schedule with INVALID_ID
+    // Initialize schedule with INVALID_ID
     sched = DailySchedule(n, vector<Worker_T>(dailyNeed, INVALID_ID));
     
     // Keep track of how many shifts each worker has been assigned

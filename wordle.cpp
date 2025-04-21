@@ -1,7 +1,5 @@
 #ifndef RECCHECK
-// For debugging
 #include <iostream>
-// For std::remove
 #include <algorithm> 
 #include <map>
 #include <set>
@@ -28,13 +26,13 @@ std::set<std::string> wordle(
     set<string> results;
     string current = in;
     
-    // Early pruning: Calculate minimum word length needed
+    // Calculate minimum word length
     int dash_count = 0;
     for(char c : current) {
         if(c == '-') dash_count++;
     }
     
-    // If we have more floating letters than spaces, it's impossible
+    // Impossible if more floating letters than spaces
     if(floating.size() > dash_count) {
         return results; // Return empty set
     }
@@ -53,7 +51,7 @@ void wordle_helper(
     const set<string>& dict,
     set<string>& results)
 {
-    // Base case: we've reached the end of the string
+    // Base case
     if (position == current.size()) {
         // Check if the completed word is in the dictionary and we used all floating chars
         if (remaining_floating.empty() && dict.find(current) != dict.end()) {
